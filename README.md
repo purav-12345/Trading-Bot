@@ -102,6 +102,7 @@ All reported results are honest, paper-based, and factor in modeled costs includ
 The codebase enforces a strict separation between configuration, deterministic execution, data pipelines, risk management, and offline AI/ML advisory experiments:
 <img width="2752" height="1536" alt="Gemini_Generated_Image_3fm6tp3fm6tp3fm6" src="https://github.com/user-attachments/assets/4ca6af03-a7a4-44a3-8c38-8451510d14e2" />
 
+```text
 haasey-bot/
 ├── config/
 │   └── settings.yaml       # Core configuration: session hours, risk parameters, fees, and active strategy selection
@@ -117,6 +118,7 @@ haasey-bot/
 │   └── web/
 │       └── app.py          # FastAPI web dashboard, real-time telemetry, and interactive supervisor chat
 └── tests/                  # 17 pytest suites covering risk calculations, factor scoring, and order execution
+```
 
 ## Installation & Execution
 
