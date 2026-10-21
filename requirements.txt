@@ -1,0 +1,49 @@
+# --- Core ---
+python-dotenv==1.0.1
+pyyaml==6.0.2
+pydantic==2.9.2
+
+# --- Broker (Zerodha) ---
+kiteconnect==5.0.1
+
+# --- Data / math ---
+pandas==2.2.3
+numpy==2.1.2
+
+# --- Free real historical data (Yahoo Finance) for backtesting ---
+yfinance==0.2.50
+
+# --- Scheduling ---
+APScheduler==3.10.4
+pytz==2024.2
+
+# --- AI (Gemini) ---
+google-genai==1.2.0
+
+# --- Agentic brain/approval layer (LangGraph). LLM stays OUT of the
+#     execution hot path; this only researches + proposes + waits for
+#     your approval, then hands a config to the deterministic engine. ---
+langgraph==0.2.45
+langchain-core==0.3.15
+langchain-google-genai==2.0.4
+
+# --- Web dashboard + chat ---
+fastapi==0.115.2
+uvicorn==0.32.0
+jinja2==3.1.4
+
+# --- HTTP / notifications ---
+requests==2.32.3
+
+# --- Tests ---
+pytest==8.3.3
+
+# --- Optional ML (HAASEY v4 phases; heavy but free, install as needed) ---
+# Phase 4 FinBERT sentiment:
+#   torch  transformers
+# Phase 5 XGBoost signal + SHAP:
+#   xgboost  scikit-learn  shap
+# Phase 7 PPO reinforcement learning:
+#   stable-baselines3  gymnasium
+# (all import-guarded — the bot runs fine without them; walk-forward, regime,
+#  multi-timeframe, genetic optimizer, and dynamic sizing need none of these.)
