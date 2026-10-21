@@ -1,0 +1,183 @@
+# =====================================================================
+#  Bot configuration. Safe to edit by hand OR via the chat instruction
+#  parser ("stop at 30000 profit, 2000 loss, trade GAIL ...").
+# =====================================================================
+
+account:
+  # Starting capital used by the PAPER broker for P&L simulation.
+  paper_starting_cash: 100000
+  # Product: MIS = intraday (auto square-off), CNC = delivery.
+  product: MIS
+  exchange: NSE
+
+# ---- Risk limits (the "kill switch"). THE most important section. ----
+risk:
+  daily_profit_target: 30000     # stop the whole day once realized+unrealized >= this
+  daily_max_loss: 2000           # stop & lock the day once P&L <= -this
+  max_trades_per_day: 50         # circuit breaker on overtrading
+  max_open_positions: 5
+  per_trade_risk_rupees: 1000    # max acceptable loss on a single position (sizing)
+  max_capital_per_trade: 50000   # never deploy more than this in one position
+  square_off_on_limit: true      # flatten everything when a limit is hit
+  lock_until_manual_reset: true  # do not trade again today until user runs/unlocks
+
+# ---- Session timing (IST) ----
+session:
+  market_open: "09:15"
+  start_trading: "09:20"   # let the open settle
+  stop_new_trades: "15:10"
+  square_off_all: "15:20"  # flatten intraday before close
+  timezone: "Asia/Kolkata"
+  trade_on_weekends: false
+
+# ---- Active strategies. Add as many blocks as you like. ----
+# mode: "autonomous" (#1) or "threshold" (#2) — both run through the same engine.
+strategies:
+
+  # ---- SCENARIO 2: live threshold buy/sell/buy cycle (your GAIL example) ----
+  - name: gail_threshold
+    type: threshold
+    enabled: true
+    symbol: GAIL
+    quantity: 500
+    entry_price: 150.0      # buy when LTP <= this (and we're flat)
+    target_price: 155.0     # sell when LTP >= this
+    stoploss_price: 147.0   # sell to cut loss
+    re_enter: true          # after selling, look to buy again -> keep cycling
+
+  # ---- SCENARIO 1: autonomous trend/momentum with optional AI bias ----
+  - name: nifty50_momentum
+    type: supertrend_orb
+    enabled: false          # turn on after you've paper-tested
+    symbol: RELIANCE
+    quantity: 10
+    atr_period: 10
+    atr_multiplier: 3.0
+    opening_range_minutes: 15
+    use_ai_bias: true       # consult Gemini news sentiment before entering
+
+  # ---- Strategy #1: Opening Range Breakout + volume + VWAP (bar-based) ----
+  - name: reliance_orb_vwap
+    type: orb_vwap
+    enabled: false
+    symbol: RELIANCE
+    quantity: 10
+    opening_range_minutes: 15
+    volume_mult: 1.5        # breakout bar volume > 1.5x session average
+    target_r: 2.0           # target = 2x the risk (range low as stop)
+
+  # ---- Strategy #2: Supertrend + VWAP trend filter (bar-based) ----
+  - name: reliance_supertrend_vwap
+    type: supertrend_vwap
+    enabled: false
+    symbol: RELIANCE
+    quantity: 10
+    atr_period: 10
+    atr_multiplier: 3.0
+    stop_atr_mult: 2.0
+
+  # ---- Strategy #3: RSI mean-reversion, buy dips in an uptrend (bar-based) --
+  - name: reliance_rsi_reversion
+    type: rsi_reversion
+    enabled: false
+    symbol: RELIANCE
+    quantity: 10
+    rsi_period: 2           # RSI(2) is the classic short-term reversion setting
+    oversold: 10.0
+    exit_level: 60.0
+    trend_sma: 100
+
+  # ---- HAASEY: fully-autonomous multi-factor scoring bot (your design) ----
+  # Scans the universe, scores each stock, sizes by ATR. LIVE uses all factors;
+  # BACKTEST uses only technical+momentum (avoids look-ahead bias).
+  - name: haasey
+    type: haasey
+    enabled: false
+    universe: auto             # "auto" = scan the full liquid NSE list and PICK
+    capital: 20000
+    max_positions: 5           # hold at most 5 stocks at once
+    per_trade_risk_pct: 0.02   # risk 2% of capital per trade
+    max_pos_pct: 0.20          # <=20% of capital in one position
+    atr_period: 14
+    # ---- v2 anti-churn controls ----
+    decision_bar_minutes: 15   # decide on 15-min candles (not 5-min noise)
+    cooldown_minutes: 60       # cannot exit within 60 min of entry
+    trail_atr_mult: 2.0        # exit = peak - 2xATR trailing stop
+    target_atr_mult: 3.0       # expected move used by the cost gate
+    min_profit_cost_ratio: 1.6 # skip trade unless expected move > 1.6x cost
+    trend_sma: 50              # only buy above 50-SMA ...
+    trend_ema: 20              # ... and above 20-EMA (no falling knives)
+    strong_buy: 0.70           # stricter entry thresholds
+    buy: 0.55
+    use_fundamentals: true
+    use_sentiment: true
+    use_macro: true
+    weights:
+      technical: 0.30
+      fundamental: 0.25
+      sentiment: 0.20
+      momentum: 0.15
+      macro: 0.10
+
+  # ---- HAASEY v3: deep-value 13-factor picker + 4.2% take-profit ----
+  - name: haasey_v3
+    type: haasey_v3
+    enabled: false             # flip to true to use live; --strategy runs it regardless
+    universe: auto
+    capital: 20000
+    max_positions: 25         # effectively uncapped; ₹20k cash is the real limit
+    per_trade_risk_pct: 0.015
+    max_pos_pct: 0.12          # smaller per-name slice so it can hold more stocks
+    atr_period: 14
+    decision_bar_minutes: 15
+    cooldown_minutes: 60       # hold >=4 bars, less whipsaw (was 30)
+    trail_atr_mult: 2.0        # tighter stop, faster loss-cut (was 2.5)
+    target_atr_mult: 3.0
+    min_profit_cost_ratio: 2.0 # only trade if expected move > 2.0x cost (was 1.6)
+    trend_sma: 50
+    trend_ema: 20
+    # 3-state regime filter (BULL/BEAR/CHOPPY) from NIFTY trend + India VIX
+    regime_sma: 50             # index SMA for trend classification
+    regime_vix_high: 20.0      # VIX above this => BEAR/risk-off (no new entries)
+    # Multi-timeframe confluence: only enter if the higher timeframe agrees
+    use_multitimeframe: true
+    htf_minutes: 60            # higher timeframe (60-min)
+    htf_sma: 20                # enter only if 60-min close > its 20-SMA
+    take_profit_pct: 0.010     # 1.0% — meaningful 15-min trend, not noise (was 0.4%)
+    # factor weights (sum = 1.0). Removed: cashflow(FCF+interest-cov),
+    # promoter, ROCE, dividend yield — no free data for them.
+    w_value: 0.25              # PE, PB, PEG
+    w_quality: 0.22            # ROE, D/E
+    w_growth: 0.22             # EPS, Revenue growth
+    w_stability: 0.05          # Current ratio only
+    w_momentum: 0.13
+    w_technical: 0.08
+    w_sentiment: 0.05
+    strong_buy: 0.65
+    buy: 0.46                   # lower (was 0.50) — more candidates
+    # time-of-day filter: only enter in the trend windows (skip midday lull)
+    trade_windows: "09:30-11:30,13:30-15:00"
+    use_regime_weights: true    # switch factor weights by regime (live only)
+    use_fundamentals: true
+    use_sentiment: true
+    use_macro: true
+
+# ---- Transaction costs + slippage (Zerodha intraday equity defaults) ----
+# Used by the backtester so net P&L is realistic, not optimistic.
+# Verify against https://zerodha.com/charges before trusting live numbers.
+costs:
+  brokerage_pct: 0.0003      # 0.03% of turnover, per order...
+  brokerage_cap: 20.0        # ...capped at Rs.20 per order
+  stt_pct_sell: 0.00025      # 0.025% on sell side
+  exchange_txn_pct: 0.0000297
+  sebi_pct: 0.000001
+  stamp_pct_buy: 0.00003
+  gst_pct: 0.18
+  slippage_bps: 2.0          # assume 2 bps adverse slippage per fill
+
+# ---- AI layer ----
+ai:
+  enabled: true
+  # AI only ADDS a confirmation/bias; it never bypasses the risk engine.
+  news_sentiment: true
+  eod_summary: true
