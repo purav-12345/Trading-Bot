@@ -1,4 +1,4 @@
-# HAASEY: Autonomous Indian Equities Trading System
+# Autonomous Indian Equities Trading System
 
 HAASEY is a personal-use, paper-first automated trading framework specifically designed for Indian equities. It operates by scanning a predefined universe of stocks, scoring them using a combination of fundamental, technical, and news sentiment factors, and adapting its behavior to the current market regime. The system sizes positions dynamically based on risk parameters and enforces a strict daily profit/loss kill-switch. The foundational philosophy of this project is to validate strategies through rigorous walk-forward testing, ensuring that developers are not fooled by in-sample backtesting fantasies.
 
