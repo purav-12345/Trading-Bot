@@ -110,6 +110,27 @@ python -m venv .venv
 pip install -r requirements.txt
 '''
 
+## 📂 Project Architecture & Directory Layout
+
+The codebase enforces a strict separation between configuration, deterministic execution, data pipelines, risk management, and offline AI/ML advisory experiments:
+
+```text
+haasey-bot/
+├── config/
+│   └── settings.yaml       # Core configuration: session hours, risk parameters, fees, and active strategy selection
+├── src/
+│   ├── strategies/         # Strategy implementations: flagship haasey_v3, orb_vwap, supertrend_vwap, rsi_reversion
+│   ├── data/               # Market data pipelines: NIFTY/VIX regime detection, universe scanner, fundamentals
+│   ├── ai/                 # AI & NLP modules: local FinBERT sentiment scoring, Gemini interface, Google News RSS
+│   ├── agent/              # LangGraph multi-step workflows & human-in-the-loop regime supervisor
+│   ├── risk/               # Real-time risk engine: ATR/Kelly dynamic position sizing, daily kill-switch
+│   ├── engine/             # Core execution loop: APScheduler, state machines, paper logging, Zerodha Kite gateway
+│   ├── backtest/           # Validation suite: walk-forward testing engine, portfolio simulator, cost models
+│   ├── ml/                 # Gated ML experiments: XGBoost signal models, SHAP explanations, PPO/RL environments
+│   └── web/
+│       └── app.py          # FastAPI web dashboard, real-time telemetry, and interactive supervisor chat
+└── tests/                  # 17 pytest suites covering risk calculations, factor scoring, and order execution
+
 
 
 
