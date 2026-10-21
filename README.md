@@ -97,28 +97,11 @@ All reported results are honest, paper-based, and factor in modeled costs includ
 
 **Conclusion on Results:** The framework is highly sophisticated and fully operational, but it is not a proven money-maker. It successfully fulfills its primary objective: honestly proving the absence of a tradable edge under current parameters.
 
-## Installation & Execution
-
-To set up the environment and run the system locally:
-
-```bash
-# Set up virtual environment
-python -m venv .venv
-
-# Activate environment (Windows)
-.venv\Scripts\activate            
-# OR activate environment (Linux/Mac)
-# source .venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
 ## 📂 Project Architecture & Directory Layout
-<img width="2752" height="1536" alt="Gemini_Generated_Image_3fm6tp3fm6tp3fm6" src="https://github.com/user-attachments/assets/c9bf4f5c-b80e-4cdd-aaa0-ba18183f9d33" />
 
 The codebase enforces a strict separation between configuration, deterministic execution, data pipelines, risk management, and offline AI/ML advisory experiments:
+<img width="2752" height="1536" alt="Gemini_Generated_Image_3fm6tp3fm6tp3fm6" src="https://github.com/user-attachments/assets/4ca6af03-a7a4-44a3-8c38-8451510d14e2" />
 
-```text
 haasey-bot/
 ├── config/
 │   └── settings.yaml       # Core configuration: session hours, risk parameters, fees, and active strategy selection
@@ -134,6 +117,22 @@ haasey-bot/
 │   └── web/
 │       └── app.py          # FastAPI web dashboard, real-time telemetry, and interactive supervisor chat
 └── tests/                  # 17 pytest suites covering risk calculations, factor scoring, and order execution
+
+## Installation & Execution
+
+To set up the environment and run the system locally:
+
+```bash
+# Set up virtual environment
+python -m venv .venv
+
+# Activate environment (Windows)
+.venv\Scripts\activate            
+# OR activate environment (Linux/Mac)
+# source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
 
 
 
