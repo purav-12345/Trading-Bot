@@ -9,6 +9,10 @@ This bot does not generate a guaranteed profit, and it is crucial to acknowledge
 * **Retail Trading Reality:** According to the Securities and Exchange Board of India (SEBI), 93% of retail Futures and Options (F&O) traders lose money. 
 * **Project Purpose:** The true value of this project lies in enforcing discipline and providing honest algorithmic validation, rather than generating returns. 
 * **Paper Trading Only:** The system runs in paper mode (simulated fills) by default. You must not risk real money without securing a long, positive, out-of-sample track record in live-paper trading.
+<img width="2752" height="1536" alt="Gemini_Generated_Image_hwsk1hhwsk1hhwsk" src="https://github.com/user-attachments/assets/207d8d2a-58d5-42bf-b636-047db3deb86e" />
+<img width="2752" height="1536" alt="Gemini_Generated_Image_uhag72uhag72uhag" src="https://github.com/user-attachments/assets/816150e3-bebb-4ca8-a6ab-cdc424e7e54d" />
+
+
 
 ## Core Framework Features
 
@@ -110,6 +114,7 @@ python -m venv .venv
 pip install -r requirements.txt
 
 ## 📂 Project Architecture & Directory Layout
+<img width="2752" height="1536" alt="Gemini_Generated_Image_3fm6tp3fm6tp3fm6" src="https://github.com/user-attachments/assets/c9bf4f5c-b80e-4cdd-aaa0-ba18183f9d33" />
 
 The codebase enforces a strict separation between configuration, deterministic execution, data pipelines, risk management, and offline AI/ML advisory experiments:
 
